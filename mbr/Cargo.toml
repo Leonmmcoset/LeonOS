@@ -1,0 +1,25 @@
+cargo-features = ["profile-rustflags"]
+[package]
+name = "mbr"
+version.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.release]
+panic = "abort"        # 禁用panic展开（裸机无堆）
+lto = true             # 链接时优化，减小体积
+opt-level = "z"        # 极致压缩（MBR仅512字节）
+strip = "symbols"      # 剥离符号表
+# 直接传递链接器参数，覆盖默认的RELRO/PIE
+rustflags = [
+    "-C", "link-arg=-nostdlib",        # 不链接标准库
+    "-C", "link-arg=-static",          # 静态链接
+    "-C", "link-arg=-znoexecstack",    # 禁用执行栈
+    "-C", "link-arg=-znorelro",        # 禁用RELRO，消除.dynamic段检查
+    "-C", "link-arg=-nopie",           # 禁用PIE（位置无关执行）
+    "-C", "link-arg=--script=./mbr-linker.ld"  # 指定链接脚本
+]
+
+[dependencies]
+os_in_rust_common = { workspace = true }
