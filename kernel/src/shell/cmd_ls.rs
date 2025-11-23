@@ -22,6 +22,10 @@ pub fn ls(cwd: &str, param: Option<&str>, buff: &mut [u8]) {
             if entry_name.starts_with(".") {
                 continue;
             }
+            // if entry_name == "" {
+            //     println!("empty folder");
+            //     continue;
+            // }
             print!("{} ", entry_name);
         }
         println!();

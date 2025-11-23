@@ -1,4 +1,4 @@
-use super::{cmd_custom, cmd_dir, cmd_echo, cmd_file, cmd_grep, cmd_cat};
+use super::{cmd_custom, cmd_dir, cmd_echo, cmd_file, cmd_grep, cmd_cat, cmd_version, cmd_date};
 use super::{cmd::Cmd, cmd_cd, cmd_ls, cmd_ps};
 
 use crate::{print, println};
@@ -79,6 +79,13 @@ pub fn execute_cmd(cwd: &str, cmd: Cmd, param: Option<&str>, buf: &mut [u8]) {
                 println!("please input file path");
             }
         },
+        Cmd::Version => {
+            cmd_version::version();
+        },
+        Cmd::Date => {
+            cmd_date::date();
+        },
+        
         Cmd::Custom(cmd) => {
             cmd_custom::custom_cmd(cwd, cmd, param, buf);
         },

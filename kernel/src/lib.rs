@@ -35,3 +35,4 @@ mod common;
 pub mod userprog;
 pub mod pipe;
 pub mod version;
+pub mod time;

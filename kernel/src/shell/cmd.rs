@@ -15,6 +15,8 @@ pub enum Cmd<'a> {
     Echo,
     Grep,
     Cat,
+    Version,
+    Date,
     Custom(&'a str)
 }
 impl <'a> Cmd<'a> {
@@ -41,8 +43,10 @@ impl <'a> Cmd<'a> {
             "help" => Self::Help,
             "echo" => Self::Echo,
             "grep" => Self::Grep,
-            "cat" => Self::Cat,
-            _ => Cmd::Custom(name),
+        "cat" => Self::Cat,
+        "version" => Self::Version,
+        "date" => Self::Date,
+        _ => Cmd::Custom(name),
         }
     }
     
@@ -63,6 +67,8 @@ impl <'a> Cmd<'a> {
             ("echo", "Print arguments to stdout"),
             ("grep", "Filter lines containing a pattern"),
             ("cat", "Display file contents"),
+            ("version", "Show system version information"),
+            ("date", "Show current date and time"),
         ]
     }
 }

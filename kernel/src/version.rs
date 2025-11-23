@@ -20,7 +20,7 @@ pub const VERSION_PATCH: u32 = 0;
 /**
  * 构建版本号
  */
-pub const VERSION_BUILD: u32 = 1;
+pub const VERSION_BUILD: u32 = 10;
 
 /**
  * 完整版本字符串
