@@ -8,6 +8,7 @@ use super::{cmd::Cmd, cmd_cd, cmd_dispatcher, shell::Shell};
 
 const PATH_LEN: usize = 100;
 const INPUT_LEN: usize = 100;
+// println!("LEONOS: Start load shell");
 
 /**
  * shell的工作目录

@@ -1,4 +1,4 @@
-use super::{cmd_custom, cmd_dir, cmd_file};
+use super::{cmd_custom, cmd_dir, cmd_echo, cmd_file, cmd_grep, cmd_cat};
 use super::{cmd::Cmd, cmd_cd, cmd_ls, cmd_ps};
 
 use crate::{print, println};
@@ -57,6 +57,27 @@ pub fn execute_cmd(cwd: &str, cmd: Cmd, param: Option<&str>, buf: &mut [u8]) {
         Cmd::Shutdown => {
             println!("Shutting down the system...");
             sys_call::shutdown();
+        },
+        Cmd::Echo => {
+            if let Some(params) = param {
+                cmd_echo::execute_echo(params);
+            } else {
+                print!("\n");
+            }
+        },
+        Cmd::Grep => {
+            if let Some(params) = param {
+                cmd_grep::execute_grep(params);
+            } else {
+                println!("please input string need to grep");
+            }
+        },
+        Cmd::Cat => {
+            if let Some(params) = param {
+                cmd_cat::execute_cat(cwd, params, buf);
+            } else {
+                println!("please input file path");
+            }
         },
         Cmd::Custom(cmd) => {
             cmd_custom::custom_cmd(cwd, cmd, param, buf);

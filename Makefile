@@ -30,7 +30,6 @@ kernel.bin:
 	cd .. && \
 	x86_64-linux-gnu-objcopy -I elf64-x86-64 -O binary target/kernel/release/kernel build/kernel.bin
 
-
 hd: hd60M.img mbr.bin loader.bin loader2.bin kernel.bin hd80M.img
 	dd if=build/mbr.bin  of=build/hd60M.img bs=512 count=1 conv=notrunc && \
 	dd if=build/loader.bin of=build/hd60M.img bs=512 count=1 seek=2 conv=notrunc && \

@@ -12,6 +12,9 @@ pub enum Cmd<'a> {
     Rm,
     Shutdown,
     Help,
+    Echo,
+    Grep,
+    Cat,
     Custom(&'a str)
 }
 impl <'a> Cmd<'a> {
@@ -36,6 +39,9 @@ impl <'a> Cmd<'a> {
             "rm" => Self::Rm,
             "shutdown" => Self::Shutdown,
             "help" => Self::Help,
+            "echo" => Self::Echo,
+            "grep" => Self::Grep,
+            "cat" => Self::Cat,
             _ => Cmd::Custom(name),
         }
     }
@@ -54,6 +60,9 @@ impl <'a> Cmd<'a> {
             ("rm", "Remove file"),
             ("shutdown", "Shutdown system"),
             ("help", "Show all available commands"),
+            ("echo", "Print arguments to stdout"),
+            ("grep", "Filter lines containing a pattern"),
+            ("cat", "Display file contents"),
         ]
     }
 }

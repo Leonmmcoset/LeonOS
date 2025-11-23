@@ -10,3 +10,4 @@ features = ["spin_no_std"]
 
 [dependencies]
 os_in_rust_common = { workspace = true }
+const_format = "0.2.31"

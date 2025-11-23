@@ -55,7 +55,7 @@ pub fn init_all(boot_info: &BootContext) {
     thread::check_task_stack("overflow after fs init");
 
     // 初始化文件系统
-    filesystem::mount_part("sdb5");
+    filesystem::mount_part("sdb4");
     thread::check_task_stack("overflow after fs mounted");
 
     // 初始化根目录

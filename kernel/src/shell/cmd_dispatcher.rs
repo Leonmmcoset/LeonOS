@@ -39,6 +39,7 @@ pub fn dispatch_cmd(cwd: &str, input: &str, buf: &mut [u8]) {
                 }
                 let (chpid, exit_status) = wait_res.unwrap();
                 // println!("child process exit");
+                println!("");
                 println!("child process exit. cur pid:{}, child pid:{}, child status:{:?}", sys_call::get_pid().get_data(), chpid.get_data(), exit_status);
             },
             sys_call::ForkResult::Child => {

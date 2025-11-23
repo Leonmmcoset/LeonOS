@@ -29,8 +29,7 @@ pub extern "C" fn _start(boot_info: &BootContext) {
     let gdt_addr = gdt::get_gdt_addr();
     // GDT的新地址。高地址
     let new_gdt_addr = gdt_addr as u32 + 0xc0000000;
-    
-    
+
     // 加载到cr3寄存器
     let cr3 = CR3::new(page_table::get_dir_ref() as  *const PageTable);
     cr3.load_cr3();

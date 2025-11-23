@@ -8,7 +8,7 @@
 
 
 use core::panic::PanicInfo;
-use kernel::{init, program_loader, thread_management};
+use kernel::{init, program_loader, thread_management, version};
 use os_in_rust_common::domain::LbaAddr;
 use os_in_rust_common::constants;
 use os_in_rust_common::{context::BootContext, printkln};
@@ -18,16 +18,27 @@ use os_in_rust_common::{context::BootContext, printkln};
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start(boot_info: &BootContext) {
+    fn display_banner() {
+        printkln!("                               ");
+        printkln!(" __                _____ _____ ");
+        printkln!("|  |   ___ ___ ___|     |   __|");
+        printkln!("|  |__| -_| . |   |  |  |__   |");
+        printkln!("|_____|___|___|_|_|_____|_____|");
+        printkln!("                               ");
+        printkln!(" Version: {} ({})", kernel::version::VERSION_STRING, kernel::version::VERSION_NAME);
+        printkln!(" (C) LeonCloud 2021-2025. All rights reserved.");
+    }
+    display_banner();
 
     // 初始化一切
     init::init_all(boot_info);
 
 
     // 读取并且写入用户进程
-    program_loader::sync_program(LbaAddr::new(250), 100 * constants::DISK_SECTOR_SIZE, "/cat");
-    program_loader::sync_program(LbaAddr::new(350), 50 * constants::DISK_SECTOR_SIZE, "/grep");
-    program_loader::sync_program(LbaAddr::new(400), 10 * constants::DISK_SECTOR_SIZE, "/echo");
-    program_loader::sync_program(LbaAddr::new(410), 1443, "/main.rs");
+    // program_loader::sync_program(LbaAddr::new(250), 100 * constants::DISK_SECTOR_SIZE, "/cat");
+    // program_loader::sync_program(LbaAddr::new(350), 50 * constants::DISK_SECTOR_SIZE, "/grep");
+    // program_loader::sync_program(LbaAddr::new(400), 10 * constants::DISK_SECTOR_SIZE, "/echo");
+    // program_loader::sync_program(LbaAddr::new(410), 1443, "/main.rs");
 
     loop {
         thread_management::thread_yield();
