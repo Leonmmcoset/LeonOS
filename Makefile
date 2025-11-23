@@ -39,6 +39,7 @@ hd: hd60M.img mbr.bin loader.bin loader2.bin kernel.bin hd80M.img
 build: hd mbr.bin loader.bin loader2.bin kernel.bin
 
 run: build
+	awk -F'[ =]' '/pub const VERSION_BUILD: u32 = [0-9]+;/ {printf "pub const VERSION_BUILD: u32 = %d;\n", $6 + 1; next} {print}' kernel/src/version.rs > kernel/src/version.rs.tmp && mv kernel/src/version.rs.tmp kernel/src/version.rs
 	qemu-system-i386 -hda build/hd60M.img -hdb build/hd80M.img
 
 
