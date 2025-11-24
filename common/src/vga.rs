@@ -18,6 +18,7 @@ use volatile::Volatile;
 
 use crate::utils::bool_to_int;
 use crate::racy_cell::RacyCell;
+use crate::port::Port;
 #[no_mangle]
 pub static WRITER: RacyCell<Writer> = RacyCell::new(Writer::new(0xC00b8000, CharAttr::new(Color::White, Color::Black, false)));
 // pub static WRITER: Writer = Writer::new(0xb8000, CharAttr::new(Color::White, Color::Black, false));
@@ -49,6 +50,25 @@ pub fn clear_current_row() {
 
 pub fn clear_all() {
     unsafe { WRITER.get_mut().clear_all() };
+}
+
+/**
+ * 设置光标可见性
+ */
+pub fn set_cursor_visible(visible: bool) {
+    unsafe { WRITER.get_mut().set_cursor_visible(visible) };
+}
+
+/**
+ * 初始化光标
+ */
+pub fn init_cursor() {
+    unsafe {
+        // 设置光标可见
+        WRITER.get_mut().set_cursor_visible(true);
+        // 确保光标位置正确
+        WRITER.get_mut()._update_cursor();
+    };
 }
 
 impl Write for Writer {
@@ -143,6 +163,10 @@ pub struct Writer {
      * 要写入的缓冲区
      */
     buffer: u32,
+    /**
+     * 光标是否可见
+     */
+    cursor_visible: bool,
 }
 
 impl Writer {
@@ -163,20 +187,27 @@ impl Writer {
             col_pos: 0,
             default_attr,
             buffer,
+            cursor_visible: true,
         }
     }
     #[inline(never)]
     fn _backspace(&mut self) {
-        // 如果是第一列，没法后退了
-        if self.col_pos == 0 {
-            let max_width = self.get_buffer().buffer[0].len() - 1;
-            // 往上推一行
-            self.row_pos -= 1;
-            self.col_pos = max_width;
-            return;
+        if self.col_pos > 0 {
+            self.col_pos -= 1;
+            self.get_buffer().buffer[self.row_pos][self.col_pos]
+                .write(SingleChar::new(0, self.default_attr));
+        } else {
+            // 回到上一行的最后一个位置
+            if self.row_pos > 0 {
+                self.row_pos -= 1;
+                self.col_pos = self.get_buffer().buffer[0].len() - 1;
+                self.get_buffer().buffer[self.row_pos][self.col_pos]
+                    .write(SingleChar::new(0, self.default_attr));
+            }
         }
-        // 如果不是第一列，那么直接后退
-        self.col_pos -= 1;
+        
+        // 更新硬件光标位置
+        self._update_cursor();
     }
     #[inline(never)]
     fn _new_line(&mut self) {
@@ -185,20 +216,22 @@ impl Writer {
         // 如果没到最后一行，可以直接换行
         if self.row_pos < max_height {
             self.row_pos += 1;
-            self.col_pos = 0;
-            return;
-        }
-        let arry_buf = self.get_buffer().buffer.as_mut();
-        // 如果到最后一行了，需要把第一行移出，并且整体上移1行
-        for row_idx in 1..=max_height {
-            for col_idx in 0..=max_width {
-                let ele = arry_buf[row_idx][col_idx].read();
-                arry_buf[row_idx - 1][col_idx].write(ele);
+        } else {
+            let arry_buf = self.get_buffer().buffer.as_mut();
+            // 如果到最后一行了，需要把第一行移出，并且整体上移1行
+            for row_idx in 1..=max_height {
+                for col_idx in 0..=max_width {
+                    let ele = arry_buf[row_idx][col_idx].read();
+                    arry_buf[row_idx - 1][col_idx].write(ele);
+                }
             }
+            // 把最后一行清空
+            self._clear_row(max_height);
         }
         self.col_pos = 0;
-        // 把最后一行清空
-        self._clear_row(max_height);
+        
+        // 更新硬件光标位置
+        self._update_cursor();
     }
     #[inline(never)]
     fn _clear_row(&mut self, row_idx: usize) {
@@ -231,6 +264,55 @@ impl Writer {
     }
 
     /**
+     * 更新硬件光标位置
+     */
+    #[inline(never)]
+    fn _update_cursor(&mut self) {
+        if !self.cursor_visible {
+            return;
+        }
+        
+        // 计算光标位置：行 * 列数 + 列
+        let pos = self.row_pos * BUFFER_WIDTH + self.col_pos;
+        
+        // 向VGA端口发送命令来设置光标位置
+        let mut cursor_command_port = Port::<u8>::new(0x3D4);
+        let mut cursor_data_port = Port::<u8>::new(0x3D5);
+        
+        // 设置光标位置低8位
+        unsafe {
+            cursor_command_port.write(0x0F);
+            cursor_data_port.write((pos & 0xFF) as u8);
+            
+            // 设置光标位置高8位
+            cursor_command_port.write(0x0E);
+            cursor_data_port.write(((pos >> 8) & 0xFF) as u8);
+        }
+    }
+    
+    /**
+     * 设置光标可见性
+     */
+    #[inline(never)]
+    pub fn set_cursor_visible(&mut self, visible: bool) {
+        self.cursor_visible = visible;
+        
+        if visible {
+            // 如果设置为可见，更新光标位置
+            self._update_cursor();
+        } else {
+            // 如果设置为不可见，隐藏光标
+            let mut cursor_command_port = Port::<u8>::new(0x3D4);
+            let mut cursor_data_port = Port::<u8>::new(0x3D5);
+            
+            unsafe {
+                cursor_command_port.write(0x0A);
+                cursor_data_port.write(0x20);
+            }
+        }
+    }
+    
+    /**
      * 光标后移
      */
     #[inline(never)]
@@ -242,6 +324,9 @@ impl Writer {
             return;
         }
         self.col_pos += 1;
+        
+        // 更新硬件光标位置
+        self._update_cursor();
     }
 
     /**

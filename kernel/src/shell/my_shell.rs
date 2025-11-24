@@ -2,6 +2,7 @@
 use os_in_rust_common::{racy_cell::RacyCell, MY_PANIC};
 
 use crate::{ascii::AsciiKey, print, println, scancode::{Key, ScanCodeType}, sys_call::{self}};
+use os_in_rust_common::vga::{init_cursor, set_cursor_visible};
 
 use super::{cmd::Cmd, cmd_cd, cmd_dispatcher, shell::Shell};
 
@@ -124,6 +125,9 @@ fn exec_cmd(shell: &mut Shell<PATH_LEN, INPUT_LEN>, buf: &mut [u8]) {
 
 #[inline(never)]
 pub fn shell_start() {
+    // 初始化光标
+    init_cursor();
+    
     // println!("shell start, shell:{}", "/");
     // 默认shell是根目录
     let shell = unsafe { SHELL.get_mut() };
