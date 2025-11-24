@@ -18,7 +18,7 @@ use os_in_rust_common::{context::BootContext, printkln};
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start(boot_info: &BootContext) {
-    fn display_banner() {
+    fn banner_start() {
         printkln!("                               ");
         printkln!(" __                _____ _____ ");
         printkln!("|  |   ___ ___ ___|     |   __|");
@@ -28,7 +28,11 @@ pub extern "C" fn _start(boot_info: &BootContext) {
         printkln!(" Version: {} ({})", kernel::version::VERSION_STRING, kernel::version::VERSION_NAME);
         printkln!(" (C) LeonCloud 2021-2025. All rights reserved.");
     }
-    display_banner();
+
+    fn banner_note() {
+        printkln!("The LeonOS is powered by the Luks Kernel");
+    }
+    banner_start();
 
     // 初始化一切
     init::init_all(boot_info);

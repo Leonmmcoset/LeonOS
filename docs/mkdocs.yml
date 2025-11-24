@@ -1,0 +1,8 @@
+site_name: LeonOS文档
+theme:
+  name: material
+  language: zh
+
+nav:
+  - 首页: index.md
+  - 关于: about.md
