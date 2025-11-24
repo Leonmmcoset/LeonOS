@@ -30,9 +30,13 @@ pub extern "C" fn _start(boot_info: &BootContext) {
     }
 
     fn banner_note() {
-        printkln!("The LeonOS is powered by the Luks Kernel");
+        printkln!(" The LeonOS is powered by the Luks Kernel");
+        printkln!(r#" About the LeonOS and the Luks Kernel, please visit:
+ https://os.jjmm.ink/about/"#);
     }
     banner_start();
+    printkln!("");
+    banner_note();
 
     // 初始化一切
     init::init_all(boot_info);
