@@ -15,12 +15,12 @@ pub const VERSION_MINOR: u32 = 0;
 /**
  * 补丁版本号
  */
-pub const VERSION_PATCH: u32 = 0;
+pub const VERSION_PATCH: u32 = 1;
 
 /**
  * 构建版本号
  */
-pub const VERSION_BUILD: u32 = 14;
+pub const VERSION_BUILD: u32 = 18;
 
 /**
  * 完整版本字符串
