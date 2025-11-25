@@ -34,67 +34,6 @@ macro_rules! printkln {
     ($($arg:tt)*) => ($crate::printk!("{}\n", format_args!($($arg)*)));
 }
 
-// 带颜色的打印宏
-#[macro_export]
-macro_rules! printk_color {
-    ($color:expr, $($arg:tt)*) => {
-        {
-            let old_attr = unsafe { $crate::vga::WRITER.get_mut().get_current_attr() };
-            unsafe { $crate::vga::WRITER.get_mut().set_foreground_color($color) };
-            $crate::vga::print(format_args!($($arg)*));
-            unsafe { $crate::vga::WRITER.get_mut().set_attr(old_attr) };
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! printkln_color {
-    ($color:expr, $($arg:tt)*) => {
-        $crate::printk_color!($color, "{}\n", format_args!($($arg)*));
-    };
-};
-
-// 常用颜色的快捷宏
-#[macro_export]
-macro_rules! printk_red {
-    ($($arg:tt)*) => ($crate::printk_color!($crate::vga::Color::Red, $($arg)*));
-}
-
-#[macro_export]
-macro_rules! printkln_red {
-    ($($arg:tt)*) => ($crate::printkln_color!($crate::vga::Color::Red, $($arg)*));
-}
-
-#[macro_export]
-macro_rules! printk_green {
-    ($($arg:tt)*) => ($crate::printk_color!($crate::vga::Color::Green, $($arg)*));
-}
-
-#[macro_export]
-macro_rules! printkln_green {
-    ($($arg:tt)*) => ($crate::printkln_color!($crate::vga::Color::Green, $($arg)*));
-}
-
-#[macro_export]
-macro_rules! printk_blue {
-    ($($arg:tt)*) => ($crate::printk_color!($crate::vga::Color::Blue, $($arg)*));
-}
-
-#[macro_export]
-macro_rules! printkln_blue {
-    ($($arg:tt)*) => ($crate::printkln_color!($crate::vga::Color::Blue, $($arg)*));
-}
-
-#[macro_export]
-macro_rules! printk_yellow {
-    ($($arg:tt)*) => ($crate::printk_color!($crate::vga::Color::Yellow, $($arg)*));
-}
-
-#[macro_export]
-macro_rules! printkln_yellow {
-    ($($arg:tt)*) => ($crate::printkln_color!($crate::vga::Color::Yellow, $($arg)*));
-};
-
 #[no_mangle]
 #[inline(never)]
 pub fn print(args: fmt::Arguments) {
@@ -371,56 +310,6 @@ impl Writer {
                 cursor_data_port.write(0x20);
             }
         }
-    }
-    
-    /**
-     * 获取当前的字符属性
-     */
-    #[inline(never)]
-    pub fn get_current_attr(&self) -> CharAttr {
-        self.default_attr
-    }
-    
-    /**
-     * 设置字符属性
-     */
-    #[inline(never)]
-    pub fn set_attr(&mut self, attr: CharAttr) {
-        self.default_attr = attr;
-    }
-    
-    /**
-     * 设置前景色（字体颜色）
-     */
-    #[inline(never)]
-    pub fn set_foreground_color(&mut self, color: Color) {
-        // 保留背景色和闪烁位，只修改前景色
-        let current = self.default_attr.0;
-        self.default_attr = CharAttr(current & 0xF0 | color as u8);
-    }
-    
-    /**
-     * 设置背景色
-     */
-    #[inline(never)]
-    pub fn set_background_color(&mut self, color: Color) {
-        // 保留前景色和闪烁位，只修改背景色
-        let current = self.default_attr.0;
-        self.default_attr = CharAttr(current & 0x8F | ((color as u8) << 4));
-    }
-    
-    /**
-     * 设置闪烁属性
-     */
-    #[inline(never)]
-    pub fn set_blink(&mut self, blink: bool) {
-        // 保留前景色和背景色，只修改闪烁位
-        let current = self.default_attr.0;
-        self.default_attr = CharAttr(if blink {
-            current | 0x80
-        } else {
-            current & 0x7F
-        });
     }
     
     /**
