@@ -17,6 +17,7 @@ pub enum Cmd<'a> {
     Cat,
     Version,
     Date,
+    Psend,
     Custom(&'a str)
 }
 impl <'a> Cmd<'a> {
@@ -46,6 +47,7 @@ impl <'a> Cmd<'a> {
         "cat" => Self::Cat,
         "version" => Self::Version,
         "date" => Self::Date,
+        "psend" => Self::Psend,
         _ => Cmd::Custom(name),
         }
     }
@@ -69,6 +71,7 @@ impl <'a> Cmd<'a> {
             ("cat", "Display file contents"),
             ("version", "Show system version information"),
             ("date", "Show current date and time"),
+            ("psend", "Force terminate process by PID"),
         ]
     }
 }

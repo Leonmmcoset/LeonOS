@@ -1,5 +1,5 @@
 use super::{cmd_custom, cmd_dir, cmd_echo, cmd_file, cmd_grep, cmd_cat, cmd_version, cmd_date};
-use super::{cmd::Cmd, cmd_cd, cmd_ls, cmd_ps};
+use super::{cmd::Cmd, cmd_cd, cmd_ls, cmd_ps, cmd_psend};
 
 use crate::{print, println};
 use crate::sys_call;
@@ -84,6 +84,13 @@ pub fn execute_cmd(cwd: &str, cmd: Cmd, param: Option<&str>, buf: &mut [u8]) {
         },
         Cmd::Date => {
             cmd_date::date();
+        },
+        Cmd::Psend => {
+            if let Some(params) = param {
+                cmd_psend::psend(params);
+            } else {
+                println!("Usage: psend <pid>");
+            }
         },
         
         Cmd::Custom(cmd) => {

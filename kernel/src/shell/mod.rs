@@ -15,6 +15,7 @@ mod cmd_grep;
 mod cmd_cat;
 mod cmd_version;
 mod cmd_date;
+mod cmd_psend;
 
 pub use my_shell::shell_start;
 pub use shell::Shell;

@@ -9,6 +9,7 @@ pub fn _panic_spin(file: &str, line: u32, col: u32, condition: fmt::Arguments) {
     // 把中断关闭
     instruction::disable_interrupt();
     printkln!(":(");
+    printkln!("!!! Kernel Panic !!!");
     printkln!("A kernel error that the LeonOS system couldn't handle occurred.");
     printkln!("Please E-Mail to the developer with this panic log to fix this error.");
     printkln!("----------------------------------------------------------------------");
