@@ -16,6 +16,7 @@ mod cmd_cat;
 mod cmd_version;
 mod cmd_date;
 mod cmd_psend;
+mod cmd_hello;
 
 pub use my_shell::shell_start;
 pub use shell::Shell;

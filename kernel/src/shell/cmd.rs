@@ -18,6 +18,7 @@ pub enum Cmd<'a> {
     Version,
     Date,
     Psend,
+    Hello,
     Custom(&'a str)
 }
 impl <'a> Cmd<'a> {
@@ -48,6 +49,7 @@ impl <'a> Cmd<'a> {
         "version" => Self::Version,
         "date" => Self::Date,
         "psend" => Self::Psend,
+        "hello" => Self::Hello,
         _ => Cmd::Custom(name),
         }
     }
@@ -72,6 +74,7 @@ impl <'a> Cmd<'a> {
             ("version", "Show system version information"),
             ("date", "Show current date and time"),
             ("psend", "Force terminate process by PID"),
+            ("hello", "Print 'hello world' message"),
         ]
     }
 }

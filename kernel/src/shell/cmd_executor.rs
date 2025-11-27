@@ -1,4 +1,4 @@
-use super::{cmd_custom, cmd_dir, cmd_echo, cmd_file, cmd_grep, cmd_cat, cmd_version, cmd_date};
+use super::{cmd_custom, cmd_dir, cmd_echo, cmd_file, cmd_grep, cmd_cat, cmd_version, cmd_date, cmd_hello};
 use super::{cmd::Cmd, cmd_cd, cmd_ls, cmd_ps, cmd_psend};
 
 use crate::{print, println};
@@ -91,6 +91,9 @@ pub fn execute_cmd(cwd: &str, cmd: Cmd, param: Option<&str>, buf: &mut [u8]) {
             } else {
                 println!("Usage: psend <pid>");
             }
+        },
+        Cmd::Hello => {
+            cmd_hello::hello();
         },
         
         Cmd::Custom(cmd) => {
